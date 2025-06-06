@@ -46,8 +46,9 @@ regd_users.post("/login", (req,res) => {
   return res.status(300).json({message: "Yet to be implemented"});
 });
 */
-// Login endpoint
-regd_users.post("/login", (req, res) => {
+// Login endpoint, /customer/login
+regd_users.get("/login", (req, res) => { //customer/login
+return res.status(200).send("User successfully logged in");
     const username = req.body.username;
     const password = req.body.password;
 
@@ -74,8 +75,8 @@ regd_users.post("/login", (req, res) => {
 });
 
 
-// Add a book review
-regd_users.put("/auth/review/:isbn", (req, res) => {
+// Add a book review, /customer/auth
+regd_users.put("/auth/review/:isbn", (req, res) => { //customer/auth
   //Write your code here
   return res.status(300).json({message: "Yet to be implemented"});
 });
