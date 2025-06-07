@@ -47,8 +47,8 @@ regd_users.post("/login", (req,res) => {
 });
 */
 // Login endpoint, /customer/login
-regd_users.get("/login", (req, res) => { //customer/login
-return res.status(200).send("User successfully logged in");
+regd_users.post("/login", (req, res) => { //customer/login
+//return res.status(200).send("User successfully logged in");
     const username = req.body.username;
     const password = req.body.password;
 
