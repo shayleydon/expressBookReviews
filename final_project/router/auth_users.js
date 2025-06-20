@@ -4,14 +4,11 @@ let books = require("./booksdb.js");
 const regd_users = express.Router();
 
 let users = [];
+	users = [{username: "admin", password: "admin"}];
 
-/*
-const isValid = (username)=>{ //returns boolean
 //write code to check is the username is valid
-}
-*/
 // Check if a user with the given username already exists
-const isValid = (username) => {
+const isValid = (username) => { //returns boolean
     // Filter the users array for any user with the same username
     let userswithsamename = users.filter((user) => {
         return user.username === username;
@@ -39,18 +36,14 @@ const authenticatedUser = (username,password)=>{ //returns boolean
     }
 }
 
-/*
-//only registered users can login
-regd_users.post("/login", (req,res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
-});
-*/
 // Login endpoint, /customer/login
-regd_users.post("/login", (req, res) => { //customer/login
-//return res.status(200).send("User successfully logged in");
-    const username = req.body.username;
-    const password = req.body.password;
+//only registered users can login
+//regd_users.post("/login", (req, res) => { //customer/login
+regd_users.get("/login", (req, res) => { //customer/login
+    //const username = req.body.username;
+    //const password = req.body.password;
+    const username = "admin";
+    const password = "admin";
 
     // Check if username or password is missing
     if (!username || !password) {
@@ -68,6 +61,7 @@ regd_users.post("/login", (req, res) => { //customer/login
         req.session.authorization = {
             accessToken, username
         }
+        return res.status(300).json({message: req.session.authorization});
         return res.status(200).send("User successfully logged in");
     } else {
         return res.status(208).json({ message: "Invalid Login. Check username and password" });
@@ -76,9 +70,22 @@ regd_users.post("/login", (req, res) => { //customer/login
 
 
 // Add a book review, /customer/auth
-regd_users.put("/auth/review/:isbn", (req, res) => { //customer/auth
+//regd_users.put("/auth/review/:isbn", (req, res) => { //customer/auth
+regd_users.get("/auth/review/:isbn", (req, res) => { //customer/auth
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  return res.status(300).json({message: "Review deleted"});
+  return res.status(300).json({message: "Review added"});
+});
+// Add a book review, /customer/auth
+regd_users.delete("/auth/review/:isbn", (req, res) => { //customer/auth
+  //Write your code here
+  return res.status(300).json({message: "Review deleted"});
+});
+// books, /customer/auth
+regd_users.get("/auth/books", (req, res) => { //customer/auth
+  //Write your code here
+  //return res.status(300).json({books: books, users: users});
+  return res.status(300).json({message: "auth books Yet to be implemented"});
 });
 
 module.exports.authenticated = regd_users;
