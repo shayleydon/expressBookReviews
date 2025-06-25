@@ -27,36 +27,78 @@ public_users.get("/register", (req,res) => {
     return res.status(404).json({message: "Unable to register user."}); 
 });
 
+Promise.timeout = function(promise, timeoutInMilliseconds){
+//const promiseCb = function(promise, timeoutInMilliseconds){
+    return Promise.race([
+        new Promise(promise), 
+        new Promise(function(resolve, reject){
+            setTimeout(function() {
+                reject("timeout");
+            }, timeoutInMilliseconds);
+        })
+    ]);
+};
+
+const getBooksAsync = (req, res, solutionSwitch="default", solvedMethod)=>{ //returns boolean
+
+	if (solutionSwitch == "ibm") {
+		if (solvedMethod == "promiseCallback") {
+			const get_books = new Promise((resolve, reject) => {
+				resolve(res.send(JSON.stringify({books}, null, 4)));
+			});
+			get_books.then(() => console.log("Promise task 10 resolved"));
+		} else if (solvedMethod == "asyncAwait") {
+			(async () => {    
+			    try{
+				/*const data = await promiseCb(new Promise(function(resolve, reject){
+					resolve(Object.values(books));
+				}), 500);*/
+				const data = await Promise.timeout((resolve) => {
+					resolve(Object.values(books));
+				}, 500);
+				return res.status(200).json(data);
+			    }catch(e){
+				if(e == "timeout"){
+				    console.log(e);
+				}
+				return res.status(500).json({message: e});
+			    }
+			})();
+		} 
+	} else if (solutionSwitch == "my") {
+	    async function myAsyncFunction() {
+	      if (books) {
+		return books;
+	      } else {
+		// If the condition is false, throw an error to simulate rejection
+		throw new Error("The operation failed!");
+	      }
+	    }
+	    // Using async function to handle Promise
+	    async function executeAsyncFunction() {
+	      try {
+		return await myAsyncFunction();
+	      } catch (error) {
+		console.error(error.message);
+	      }
+	    }
+	    (async () => {
+		   return res.status(300).json({books: await executeAsyncFunction(), users: users});
+		})()  
+	
+	}else if (solutionSwitch == "peer") {
+	
+	}else {
+		res.status(300).json({books: books, users: users});
+	}
+}
+
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-    // Async function that wraps the operation
-    async function myAsyncFunction() {
-      // Simulating a condition with a boolean variable 'success'
-      let success = true;
-      // If the condition is true, resolve with a success message
-      if (success) {
-        //return ["output"];
-        return books;
-      } else {
-        // If the condition is false, throw an error to simulate rejection
-        throw new Error("The operation failed!");
-      }
-    }
-    // Using async function to handle Promise
-    async function executeAsyncFunction() {
-      try {
-        // Await the async function call to get the result
-        const result = await myAsyncFunction();
-        return result; // Output the result if successful
-      } catch (error) {
-        console.error(error.message); // Handle and output any errors
-      }
-    }
-    // Call the async function to execute
-    //executeAsyncFunction();
-    (async () => {
-	   return res.status(300).json({books: await executeAsyncFunction(), users: users});
-	})()    
+	let solvedByWho = ["default", "ibm","peer","my"];
+  	let solvedMethod = ["asyncAwait", "promiseCallback"]
+	getBooksAsync(req, res, solvedByWho[1], solvedMethod[0]);
+	//getBooksAsync(req, res, solvedByWho[1], solvedMethod[1]);
 });
 
 // Get book details based on ISBN
